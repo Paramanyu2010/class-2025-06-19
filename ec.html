@@ -63,7 +63,26 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-
+<p>The plot below shows the relationship between county population and the total connectedness score, using a simulated dataset. Each point represents a county, and the x-axis is displayed on a logarithmic scale to better visualize differences across a wide range of population sizes. This visualization highlights how connectedness tends to increase with population, though the variation is considerable.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ec_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This plot presents the same relationship between population and connectedness but applies a smoothing curve (LOESS) to highlight the overall trend. The x-axis is again shown on a log scale, but using a different transformation function to support smoothing. Counties with missing data are excluded. The LOESS line helps reveal that connectedness increases non-linearly with population, especially in mid-to-large sized counties.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="ec_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 
 </main>
 <!-- /main column -->

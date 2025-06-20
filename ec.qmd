@@ -3,3 +3,106 @@ title: "Economic Connectedness"
 format: html
 ---
 
+```{r setup}
+#| echo: false
+#| warning: false
+#| message: false
+
+library(tidyverse)
+library(scales)
+library(primer.data)
+library(ggplot2)
+library(dplyr)
+```
+
+
+
+The plot below shows the relationship between county population and the total connectedness score, using a simulated dataset. Each point represents a county, and the x-axis is displayed on a logarithmic scale to better visualize differences across a wide range of population sizes. This visualization highlights how connectedness tends to increase with population, though the variation is considerable.
+
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Generate county_data with consistent logic
+set.seed(123)
+county_data <- {
+  pop <- 10^runif(100, 3, 6)  # 1,000 to 1,000,000
+  data.frame(
+    county = paste("County", 1:100),
+    population = pop,
+    connectedness = rgamma(100, shape = 2, scale = 50) * log10(pop)
+  )
+}
+
+# First plot
+ggplot(county_data, aes(x = population, y = connectedness)) +
+  geom_point(alpha = 0.6, color = "steelblue") +
+  scale_x_log10(
+    labels = trans_format("log10", math_format(10^.x)),
+    breaks = trans_breaks("log10", function(x) 10^x)
+  ) +
+  labs(
+    title = "Population Distribution Weighted by Connectedness",
+    subtitle = "Counties with larger populations tend to have higher total connectedness scores.",
+    y = "Sum of Connectedness Scores",
+    x = "Population (log scale)",
+    caption = "Data source: simulated data\nNote: Populations shown on logarithmic scale"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 10),
+    axis.title = element_text(size = 10),
+    plot.caption = element_text(size = 8, hjust = 0)
+  )
+```
+
+
+This plot presents the same relationship between population and connectedness but applies a smoothing curve (LOESS) to highlight the overall trend. The x-axis is again shown on a log scale, but using a different transformation function to support smoothing. Counties with missing data are excluded. The LOESS line helps reveal that connectedness increases non-linearly with population, especially in mid-to-large sized counties.
+
+
+```{r}
+#| echo: false
+#| warning: false
+#| message: false
+
+# Clean data by removing missing values
+connectedness_clean <- county_data %>%
+  drop_na(population, connectedness)
+
+# Informational message
+message(paste("Removed", nrow(county_data) - nrow(connectedness_clean), "rows with missing values"))
+
+# Second plot
+ggplot(connectedness_clean, aes(x = population, y = connectedness)) +
+  geom_point(alpha = 0.5, color = "#2c7fb8", size = 2) +
+  scale_x_continuous(
+    trans = "log10",
+    labels = comma,
+    breaks = 10^(3:6)
+  ) +
+  geom_smooth(
+    method = "loess",
+    color = "black",
+    se = FALSE,
+    linewidth = 1
+  ) +
+  labs(
+    title = "County Connectedness by Population",
+    subtitle = "Larger populations tend to have higher connectedness scores",
+    x = "Population (log scale)",
+    y = "Connectedness Score",
+    caption = paste("Data from simulated county data |",
+                    nrow(county_data) - nrow(connectedness_clean),
+                    "counties with missing data excluded")
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(hjust = 0.5),
+    panel.grid.minor = element_blank()
+  )
+```
